@@ -18,8 +18,16 @@ const getWorks = db.prepare(`
 SELECT * FROM works;
 `)
 
+const getPiecesInMuseums = db.prepare(`
+SELECT * FROM works WHERE museumsId=@museumsId;
+`)
+
+const getMuseumById = db.prepare(`
+SELECT * FROM museums WHERE id=@id;
+`)
+
 app.get('/', (req, res) => {
-    res.send(`
+  res.send(`
       <h1>🧑‍🎨🖼️Hello to the world of art 🖼️🧑‍🎨</h1>
       <ul>
         <li>
@@ -33,17 +41,36 @@ app.get('/', (req, res) => {
 })
 
 app.get('/museums', (req, res) => {
+  const museums = getMuseums.all()
 
-    const museums = getMuseums.all()
-    res.send(museums)
+  for (let museum of museums) {
+    const works = getPiecesInMuseums.all({ museumsId: museum.id })
+    museum.works = works
+  }
+  res.send(museums)
+})
+
+app.get('/museums/:id,', (req, res) => {
+
+  const muzeum = getMuseumById.get(req.params)
+  if (muzeum) {
+    const works = getPiecesInMuseums.all({ museumsId: muzeum.id })
+    muzeum.works = works
+    res.send(muzeum)
+  } else {
+    res.status(404).send({ error: "Not found" })
+  }
 })
 
 app.get('/works', (req, res) => {
-    const works = getWorks.all()
-    res.send(works)
+  const works = getWorks.all()
+  res.send(works)
 })
 
 
 app.listen(port, () => {
-    console.log(`We are logging in http://localhost:${port}/`)
+  console.log(`We are logging in http://localhost:${port}/`)
 })
+
+// I haven't been quit focus this week because my concentration has been on the exam
+// I will try  to catch up tomorrow on this week subject. Sorry 😖
