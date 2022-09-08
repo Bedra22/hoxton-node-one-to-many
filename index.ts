@@ -72,5 +72,3 @@ app.listen(port, () => {
   console.log(`We are logging in http://localhost:${port}/`)
 })
 
-// I haven't been quit focus this week because my concentration has been on the exam
-// I will try  to catch up tomorrow on this week subject. Sorry 😖
