@@ -26,10 +26,15 @@ const museums = [
     }
 ]
 
-const dropMuseumsTable = db.prepare(`
-    DROP TABLE IF EXISTS museums;
+const deleteWorksTable = db.prepare(`
+   DELETE FROM works;
     `)
-dropMuseumsTable.run()
+deleteWorksTable.run()
+
+const deleteMuseumTable = db.prepare(`
+   DELETE FROM museums;
+    `);
+deleteMuseumTable.run();
 
 const createMuseumsTable = db.prepare(`
 
@@ -38,21 +43,17 @@ const createMuseumsTable = db.prepare(`
         name TEXT,
         location TEXT,
         PRIMARY KEY(id)
-        );
+        )
      `)
 createMuseumsTable.run()
 
 const createNewMuseumInMuseums = db.prepare(`
-
    INSERT INTO museums (name,location) VALUES (@name,@location);
-
 `)
 
 for (let museum of museums) {
     createNewMuseumInMuseums.run({ id: museum.id, name: museum.name, location: museum.location })
 }
-
-
 
 
 const works = [
@@ -106,10 +107,6 @@ const works = [
     },
 ]
 
-const dropWorksTable = db.prepare(`
-    DROP TABLE IF EXISTS works;
-    `)
-dropWorksTable.run()
 
 const createWorksTable = db.prepare(`
     
@@ -117,7 +114,7 @@ const createWorksTable = db.prepare(`
         id INTEGER,
         name TEXT,
         image TEXT,
-        museumsId TEXT ,
+        museumsId INTEGER,
         PRIMARY KEY(id)
         FOREIGN KEY (museumsId)  REFERENCES museums(id)
        );

@@ -30,6 +30,10 @@ const getWorksById = db.prepare(`
 SELECT * FROM works WHERE id=@id;
 `)
 
+const createNewMuseum = db.prepare(`
+INSERT INTO museums (name,location) VALUES (@name,@location);
+`)
+
 app.get('/', (req, res) => {
   res.send(`
       <h1>🧑‍🎨🖼️Hello to the world of art 🖼️🧑‍🎨</h1>
@@ -57,10 +61,39 @@ app.get('/museums/:id', (req, res) => {
 
   const muzeum = getMuseumById.get(req.params)
   if (muzeum) {
+    muzeum.pieces = getPiecesInMuseums.all({ museumsId: muzeum.id })
     res.send(muzeum)
   } else {
     res.status(404).send({ error: "Not found" })
   }
+})
+
+app.post('/museums', (req, res) => {
+
+  let errors: string[] = []
+
+  if (typeof req.body.name != 'string') {
+    errors.push("Name not a String or Not Found")
+  }
+
+  if (typeof req.body.location != 'string') {
+    errors.push("Location not a String or Not Found")
+  }
+
+  if (errors.length === 0) {
+    const info = createNewMuseum.run(req.body)
+    const museum = getMuseumById.get({ id: info.lastInsertRowid })
+    museum.pieces = getPiecesInMuseums.all({ museumsId: info.lastInsertRowid })
+    res.send(museum)
+  } else {
+    res.status(404).send(errors)
+  }
+})
+
+app.post('/works', (req, res) => {
+
+  let errors: string[] = []
+
 })
 
 app.get('/works', (req, res) => {
