@@ -47,9 +47,8 @@ app.get('/', (req, res) => {
 app.get('/museums', (req, res) => {
   const museums = getMuseums.all()
 
-  for (let museum of museums) {
-    const works = getPiecesInMuseums.all({ museumsId: museum.id })
-    museum.works = works
+  for (let njeMuzeum of museums) {
+    njeMuzeum.pieces = getPiecesInMuseums.all({ museumsId: njeMuzeum.id })
   }
   res.send(museums)
 })
@@ -66,6 +65,10 @@ app.get('/museums/:id', (req, res) => {
 
 app.get('/works', (req, res) => {
   const works = getWorks.all()
+
+  for (let work of works) {
+    work.muzeum = getMuseumById.all({ id: work.museumsId })
+  }
   res.send(works)
 })
 
@@ -73,6 +76,7 @@ app.get('/works/:id', (req, res) => {
 
   const pieces = getWorksById.get(req.params)
   if (pieces) {
+    pieces.muzeum = getMuseumById.all({ id: pieces.museumsId })
     res.send(pieces)
   } else {
     res.status(404).send({ error: "Not Found" })

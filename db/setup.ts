@@ -2,6 +2,59 @@ import Database from "better-sqlite3";
 
 const db = Database(`./db/data.db`, { verbose: console.log })
 
+
+const museums = [
+    {
+        id: 1,
+        name: "LOUVRE museum",
+        location: "France, Paris",
+    },
+    {
+        id: 2,
+        name: "The Metropolitan Museum of Art",
+        location: "USA, New York"
+    },
+    {
+        id: 3,
+        name: "Hermitage Museum",
+        location: "Russia, Saint Petersburg"
+    },
+    {
+        id: 4,
+        name: "Vatican Museums",
+        location: "Vatican City"
+    }
+]
+
+const dropMuseumsTable = db.prepare(`
+    DROP TABLE IF EXISTS museums;
+    `)
+dropMuseumsTable.run()
+
+const createMuseumsTable = db.prepare(`
+
+      CREATE TABLE IF NOT EXISTS museums(
+        id INTEGER ,
+        name TEXT,
+        location TEXT,
+        PRIMARY KEY(id)
+        );
+     `)
+createMuseumsTable.run()
+
+const createNewMuseumInMuseums = db.prepare(`
+
+   INSERT INTO museums (name,location) VALUES (@name,@location);
+
+`)
+
+for (let museum of museums) {
+    createNewMuseumInMuseums.run({ id: museum.id, name: museum.name, location: museum.location })
+}
+
+
+
+
 const works = [
     {
         id: 1,
@@ -66,11 +119,10 @@ const createWorksTable = db.prepare(`
         image TEXT,
         museumsId TEXT ,
         PRIMARY KEY(id)
+        FOREIGN KEY (museumsId)  REFERENCES museums(id)
        );
     `)
-
 createWorksTable.run()
-
 
 
 const addNewWorksInmuseum = db.prepare(`
@@ -83,57 +135,18 @@ for (let piece of works) {
     addNewWorksInmuseum.run({ name: piece.name, image: piece.image, museumsId: piece.museumsId })
 }
 
-const museums = [
-    {
-        id: 1,
-        name: "LOUVRE museum",
-        location: "France, Paris",
-    },
-    {
-        id: 2,
-        name: "The Metropolitan Museum of Art",
-        location: "USA, New York"
-    },
-    {
-        id: 3,
-        name: "Hermitage Museum",
-        location: "Russia, Saint Petersburg"
-    },
-    {
-        id: 4,
-        name: "Vatican Museums",
-        location: "Vatican City"
-    }
-]
-
-const dropMuseumsTable = db.prepare(`
-    DROP TABLE IF EXISTS museums;
-    `)
-dropMuseumsTable.run()
-
-const createMuseumsTable = db.prepare(`
-
-      CREATE TABLE IF NOT EXISTS museums(
-        id INTEGER ,
-        name TEXT,
-        location TEXT,
-        PRIMARY KEY(id)
-        );
-     `)
-createMuseumsTable.run()
 
 
 
-const createNewMuseumInMuseums = db.prepare(`
-
-   INSERT INTO museums (name,location) VALUES (@name,@location);
-
-`)
 
 
-for (let museum of museums) {
-    createNewMuseumInMuseums.run({ id: museum.id, name: museum.name, location: museum.location })
-}
+
+
+
+
+
+
+
 
 
 
