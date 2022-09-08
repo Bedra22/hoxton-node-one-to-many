@@ -71,11 +71,7 @@ const createWorksTable = db.prepare(`
 
 createWorksTable.run()
 
-const deleteAllWorks = db.prepare(`
-      DELETE FROM works;
-    `)
 
-deleteAllWorks.run()
 
 const addNewWorksInmuseum = db.prepare(`
       
@@ -126,10 +122,7 @@ const createMuseumsTable = db.prepare(`
      `)
 createMuseumsTable.run()
 
-const deleteAlMuseums = db.prepare(`
-      DELETE FROM museums;
-     `)
-deleteAlMuseums.run()
+
 
 const createNewMuseumInMuseums = db.prepare(`
 

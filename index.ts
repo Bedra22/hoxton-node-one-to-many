@@ -26,6 +26,10 @@ const getMuseumById = db.prepare(`
 SELECT * FROM museums WHERE id=@id;
 `)
 
+const getWorksById = db.prepare(`
+SELECT * FROM works WHERE id=@id;
+`)
+
 app.get('/', (req, res) => {
   res.send(`
       <h1>🧑‍🎨🖼️Hello to the world of art 🖼️🧑‍🎨</h1>
@@ -50,12 +54,10 @@ app.get('/museums', (req, res) => {
   res.send(museums)
 })
 
-app.get('/museums/:id,', (req, res) => {
+app.get('/museums/:id', (req, res) => {
 
   const muzeum = getMuseumById.get(req.params)
   if (muzeum) {
-    const works = getPiecesInMuseums.all({ museumsId: muzeum.id })
-    muzeum.works = works
     res.send(muzeum)
   } else {
     res.status(404).send({ error: "Not found" })
@@ -65,6 +67,16 @@ app.get('/museums/:id,', (req, res) => {
 app.get('/works', (req, res) => {
   const works = getWorks.all()
   res.send(works)
+})
+
+app.get('/works/:id', (req, res) => {
+
+  const pieces = getWorksById.get(req.params)
+  if (pieces) {
+    res.send(pieces)
+  } else {
+    res.status(404).send({ error: "Not Found" })
+  }
 })
 
 
