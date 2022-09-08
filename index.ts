@@ -34,6 +34,10 @@ const createNewMuseum = db.prepare(`
 INSERT INTO museums (name,location) VALUES (@name,@location);
 `)
 
+const createNewWork = db.prepare(`
+INSERT INTO works (name,image,museumsId) VALUES (@name,@image,@museumsId);
+`)
+
 app.get('/', (req, res) => {
   res.send(`
       <h1>🧑‍🎨🖼️Hello to the world of art 🖼️🧑‍🎨</h1>
@@ -94,6 +98,33 @@ app.post('/works', (req, res) => {
 
   let errors: string[] = []
 
+  if (typeof req.body.name != 'string') {
+    errors.push("Name not a String or Not Found")
+  }
+
+  if (typeof req.body.image != 'string') {
+    errors.push("Image not a String or Not Found")
+  }
+
+  if (typeof req.body.museumsId != "number") {
+    errors.push("MuseumsId not a number or Not Found")
+  }
+
+  if (errors.length === 0) {
+    const museum = getMuseumById.get({ id: req.body.museumsId })
+    if (museum) {
+      const info = createNewWork.run(req.body)
+      const piece = getWorksById.get({ id: info.lastInsertRowid })
+      const muzeum = getMuseumById.all({ id: piece.museumsId })
+      piece.works = [muzeum]
+      res.send(museum)
+    } else
+      res.status(400).send({
+        error: "This museum does not exists!",
+      })
+  } else {
+    res.status(404).send(errors)
+  }
 })
 
 app.get('/works', (req, res) => {
